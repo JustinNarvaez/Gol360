@@ -7,6 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
+import java.time.LocalDate;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import java.util.List;
 
@@ -44,6 +49,21 @@ public class MatchController {
     public ResponseEntity<List<MatchResponseDTO>> todos() {
         System.out.println("Listando todos los partidos...");
         return new ResponseEntity<>(matchService.getAllMatches(), HttpStatus.OK);
+    }
+
+    @GetMapping("/matches/range")
+    public ResponseEntity<Map<String, Object>> getMatchesByDateRange(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to
+    ) {
+        try {
+            Map<String, Object> response = matchService.getMatchesByDateRange(from, to);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> error = new LinkedHashMap<>();
+            error.put("error", e.getMessage());
+            return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/matches/{id}")

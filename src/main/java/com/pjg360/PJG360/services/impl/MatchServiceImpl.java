@@ -18,7 +18,14 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Service
 public class MatchServiceImpl implements IMatchService {
     private static final String API_URL =
@@ -165,6 +172,42 @@ public class MatchServiceImpl implements IMatchService {
         return matchRepository.findById(id)
                 .map(this::toDTO)
                 .orElseThrow(() -> new RuntimeException("Partido no encontrado"));
+    }
+
+    @Override
+    public Map<String, Object> getMatchesByDateRange(LocalDate from, LocalDate to) {
+        // Validacion: from no puede ser mayor que to
+        if (from.isAfter(to)) {
+            throw new IllegalArgumentException(
+                    "La fecha 'from' no puede ser mayor que 'to'");
+        }
+
+        // Convertir LocalDate a LocalDateTime (inicio y fin del dia)
+        LocalDateTime fromDateTime = from.atStartOfDay();
+        LocalDateTime toDateTime = to.atTime(23, 59, 59);
+
+        List<MatchResponseDTO> matches = matchRepository
+                .findByDateTimeBetween(fromDateTime, toDateTime)
+                .stream()
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        // Construir respuesta con mensaje (HU1 - Escenario 4)
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("from", from.toString());
+        response.put("to", to.toString());
+        response.put("count", matches.size());
+
+        if (matches.isEmpty()) {
+            response.put("message",
+                    "No hay partidos disponibles en el rango de fechas seleccionado");
+        } else {
+            response.put("message",
+                    "Se encontraron " + matches.size() + " partidos en este rango");
+        }
+
+        response.put("matches", matches);
+        return response;
     }
 
     // Detecta la fase del torneo según el nombre del round

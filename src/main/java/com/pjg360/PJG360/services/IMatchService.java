@@ -3,7 +3,9 @@ package com.pjg360.PJG360.services;
 import com.pjg360.PJG360.enums.TournamentPhase;
 import com.pjg360.PJG360.model.dtos.MatchResponseDTO;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface IMatchService {
     String loadMatchesFromApi();
@@ -14,4 +16,5 @@ public interface IMatchService {
     List<MatchResponseDTO> getScheduledMatches();
     List<MatchResponseDTO> getFinishedMatches();
     MatchResponseDTO getById(Long id);
+    Map<String, Object> getMatchesByDateRange(LocalDate from, LocalDate to);
 }
