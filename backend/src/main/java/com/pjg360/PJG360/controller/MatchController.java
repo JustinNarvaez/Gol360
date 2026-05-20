@@ -1,5 +1,6 @@
 package com.pjg360.PJG360.controller;
 
+import com.pjg360.PJG360.enums.MatchStatus;
 import com.pjg360.PJG360.enums.TournamentPhase;
 import com.pjg360.PJG360.model.dtos.MatchResponseDTO;
 import com.pjg360.PJG360.services.IMatchService;
@@ -80,5 +81,17 @@ public class MatchController {
     public ResponseEntity<List<MatchResponseDTO>> porJornada(@PathVariable String round) {
         System.out.println("Buscando partidos de jornada: " + round);
         return new ResponseEntity<>(matchService.getMatchesByRound(round), HttpStatus.OK);
+    }
+
+    @PutMapping("/matches/{matchId}/status")
+    public ResponseEntity<?> updateMatchStatus(
+            @PathVariable Long matchId,
+            @RequestParam MatchStatus status) {
+        try {
+            MatchResponseDTO updated = matchService.updateMatchStatus(matchId, status);
+            return new ResponseEntity<>(updated, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
     }
 }
