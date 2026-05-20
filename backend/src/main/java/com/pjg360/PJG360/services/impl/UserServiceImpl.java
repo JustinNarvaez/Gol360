@@ -32,7 +32,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public UserResponseDTO getById(Integer id) {
-        var user = userRepository.findById(id)
+        var user = userRepository.findById(id.longValue())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return UserMapper.toDTO(user);
     }
@@ -40,7 +40,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public UserResponseDTO updatePersonalData(Integer id, String firstName,
                                               String lastName, String userName, String email) {
-        var user = userRepository.findById(id)
+        var user = userRepository.findById((long) id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         if (userRepository.existsByUserName(userName) && !user.getUserName().equals(userName))
@@ -59,7 +59,7 @@ public class UserServiceImpl implements IUserService {
 
     @Override
     public String changePassword(Integer id, ChangePasswordRequestDTO dto) {
-        var user = userRepository.findById(id)
+        var user = userRepository.findById((long) id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword()))
