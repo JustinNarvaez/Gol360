@@ -29,4 +29,5 @@ public class MatchResponseDTO {
     private String result;
     private String stadium;
     private Boolean refreshed;
+    private String matchGroup;
 }

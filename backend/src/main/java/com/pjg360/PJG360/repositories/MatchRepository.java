@@ -15,7 +15,8 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     List<Match> findByRoundName(String roundName);
     // Todos los partidos de una jornada específica
     List<Match> findByRoundNameOrderByDateTimeAsc(String roundName);
-
+    // Partidos de un grupo especifico
+    List<Match> findByMatchGroupOrderByDateTimeAsc(String matchGroup);
     // Jornadas que tienen al menos un partido FINISHED
     @Query("SELECT DISTINCT m.roundName FROM Match m WHERE m.status = 'FINISHED' ORDER BY m.roundName DESC")
     List<String> findRoundsWithFinishedMatches();
