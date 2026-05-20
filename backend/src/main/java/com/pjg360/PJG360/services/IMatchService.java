@@ -3,8 +3,10 @@ package com.pjg360.PJG360.services;
 import com.pjg360.PJG360.enums.MatchStatus;
 import com.pjg360.PJG360.enums.TournamentPhase;
 import com.pjg360.PJG360.model.dtos.MatchResponseDTO;
+import com.pjg360.PJG360.model.dtos.MatchStatusUpdateDTO;
 
 import java.util.List;
+import java.util.Map;
 
 public interface IMatchService {
     String loadMatchesFromApi();
@@ -15,6 +17,9 @@ public interface IMatchService {
     List<MatchResponseDTO> getScheduledMatches();
     List<MatchResponseDTO> getFinishedMatches();
     MatchResponseDTO getById(Long id);
-    MatchResponseDTO updateMatchStatus(Long matchId, MatchStatus newStatus);
+    MatchResponseDTO updateMatchStatus(Long matchId, MatchStatusUpdateDTO request);
+    Map<String, Object> getResultsByRound(String roundName);
+    Map<String, Object> getLastRoundResults();
+    Map<String, Object> getStandingsByGroup(String group);
 
 }

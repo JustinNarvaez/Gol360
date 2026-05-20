@@ -51,6 +51,9 @@ public class Match {
     @JoinColumn(name = "stadium_id")
     private Stadium stadium;
 
+
+    private String matchGroup;
+
     @OneToMany(mappedBy = "match", cascade = CascadeType.ALL)
     private List<MatchEvent> eventMatches;
 

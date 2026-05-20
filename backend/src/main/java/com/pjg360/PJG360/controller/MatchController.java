@@ -3,6 +3,7 @@ package com.pjg360.PJG360.controller;
 import com.pjg360.PJG360.enums.MatchStatus;
 import com.pjg360.PJG360.enums.TournamentPhase;
 import com.pjg360.PJG360.model.dtos.MatchResponseDTO;
+import com.pjg360.PJG360.model.dtos.MatchStatusUpdateDTO;
 import com.pjg360.PJG360.services.IMatchService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController                          // ← FALTA ESTO
 @RequestMapping("/pjg360/api")
@@ -83,15 +85,51 @@ public class MatchController {
         return new ResponseEntity<>(matchService.getMatchesByRound(round), HttpStatus.OK);
     }
 
+    // ✅ VERSION NUEVA
     @PutMapping("/matches/{matchId}/status")
     public ResponseEntity<?> updateMatchStatus(
             @PathVariable Long matchId,
-            @RequestParam MatchStatus status) {
+            @RequestBody MatchStatusUpdateDTO request) {
         try {
-            MatchResponseDTO updated = matchService.updateMatchStatus(matchId, status);
+            MatchResponseDTO updated =
+                    matchService.updateMatchStatus(matchId, request);
             return new ResponseEntity<>(updated, HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // HU4 - Resultados de una jornada especifica
+    @GetMapping("/matches/results/round/{roundName}")
+    public ResponseEntity<?> getResultsByRound(@PathVariable String roundName) {
+        try {
+            Map<String, Object> results = matchService.getResultsByRound(roundName);
+            return new ResponseEntity<>(results, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+    // HU4 - Resultados de la ultima jornada disputada
+    @GetMapping("/matches/results/last-round")
+    public ResponseEntity<?> getLastRoundResults() {
+        try {
+            Map<String, Object> results = matchService.getLastRoundResults();
+            return new ResponseEntity<>(results, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/matches/standings/group/{group}")
+    public ResponseEntity<?> getStandingsByGroup(@PathVariable String group) {
+        try {
+            Map<String, Object> standings = matchService.getStandingsByGroup(group);
+            return new ResponseEntity<>(standings, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
 }
