@@ -167,6 +167,37 @@ public class MatchServiceImpl implements IMatchService {
                 .orElseThrow(() -> new RuntimeException("Partido no encontrado"));
     }
 
+    @Override
+    public MatchResponseDTO updateMatchStatus(Long matchId, MatchStatus newStatus) {
+        Match match = matchRepository.findById(matchId)
+                .orElseThrow(() -> new RuntimeException(
+                        "Partido con id " + matchId + " no encontrado"));
+
+        // Validar transiciones de estado validas
+        MatchStatus currentStatus = match.getStatus();
+
+        if (currentStatus == MatchStatus.FINISHED) {
+            throw new RuntimeException(
+                    "No se puede cambiar el estado de un partido finalizado");
+        }
+
+        if (currentStatus == MatchStatus.SCHEDULED && newStatus == MatchStatus.FINISHED) {
+            throw new RuntimeException(
+                    "Un partido no puede pasar de SCHEDULED a FINISHED directamente");
+        }
+
+        if (currentStatus == newStatus) {
+            throw new RuntimeException(
+                    "El partido ya se encuentra en estado " + newStatus);
+        }
+
+        match.setStatus(newStatus);
+        match.setRefreshed(true);
+        Match updated = matchRepository.save(match);
+
+        return toDTO(updated);
+    }
+
     // Detecta la fase del torneo según el nombre del round
     private TournamentPhase detectPhase(String roundName) {
         if (roundName == null) return TournamentPhase.GROUP;
