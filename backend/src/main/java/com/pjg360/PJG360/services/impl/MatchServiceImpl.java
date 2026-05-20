@@ -16,9 +16,9 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+
 @Service
 public class MatchServiceImpl implements IMatchService {
     private static final String API_URL =
@@ -196,6 +196,74 @@ public class MatchServiceImpl implements IMatchService {
         Match updated = matchRepository.save(match);
 
         return toDTO(updated);
+    }
+
+    @Override
+    public Map<String, Object> getResultsByRound(String roundName) {
+        List<Match> allMatches = matchRepository
+                .findByRoundNameOrderByDateTimeAsc(roundName);
+
+        if (allMatches.isEmpty()) {
+            throw new RuntimeException(
+                    "No se encontraron partidos para la jornada: " + roundName);
+        }
+
+        List<MatchResponseDTO> finished = allMatches.stream()
+                .filter(m -> m.getStatus() == MatchStatus.FINISHED)
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        List<MatchResponseDTO> pending = allMatches.stream()
+                .filter(m -> m.getStatus() != MatchStatus.FINISHED)
+                .map(this::toDTO)
+                .collect(Collectors.toList());
+
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("round", roundName);
+        response.put("totalMatches", allMatches.size());
+        response.put("finishedCount", finished.size());
+        response.put("pendingCount", pending.size());
+
+        // HU4 - Escenario 2: fecha en curso
+        if (!pending.isEmpty() && !finished.isEmpty()) {
+            response.put("message",
+                    "Jornada en curso. " + pending.size() +
+                            " partido(s) aun pendiente(s) de disputarse");
+        }
+        // HU4 - Escenario 3: todos finalizados
+        else if (pending.isEmpty()) {
+            response.put("message",
+                    "Jornada finalizada. Todos los resultados disponibles");
+        }
+        // HU4 - Escenario 3: ninguno finalizado aun
+        else {
+            response.put("message",
+                    "La jornada aun no ha comenzado. No hay resultados disponibles");
+        }
+
+        response.put("finished", finished);
+        response.put("pending", pending);
+        return response;
+    }
+
+    @Override
+    public Map<String, Object> getLastRoundResults() {
+        // Buscar jornadas que tienen partidos finalizados
+        List<String> roundsWithResults = matchRepository
+                .findRoundsWithFinishedMatches();
+
+        // HU4 - Escenario 3: no hay resultados disponibles aun
+        if (roundsWithResults.isEmpty()) {
+            Map<String, Object> response = new LinkedHashMap<>();
+            response.put("message",
+                    "No hay resultados disponibles aun. El torneo no ha comenzado");
+            response.put("finished", new ArrayList<>());
+            return response;
+        }
+
+        // Tomar la primera (viene ordenada DESC, es la mas reciente)
+        String lastRound = roundsWithResults.get(0);
+        return getResultsByRound(lastRound);
     }
 
     // Detecta la fase del torneo según el nombre del round
