@@ -63,18 +63,14 @@ export default function LoginPage() {
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status?: number; data?: { message?: string } } }
       const status = axiosErr.response?.status
-      const message = axiosErr.response?.data?.message ?? ''
 
-      if (status === 401 || status === 403) {
-        setServerError('Credenciales incorrectas. Verifica tu email/usuario y contraseña.')
-      } else if (status === 404 || message.toLowerCase().includes('no encontrado')) {
-        setServerError('Usuario no encontrado. Verifica tu email o nombre de usuario.')
-      } else if (message.toLowerCase().includes('contrase')) {
-        setServerError('Contraseña incorrecta. Inténtalo de nuevo.')
-      } else if (status === 500 && message) {
-        setServerError(message)
+      if (!status) {
+        setServerError('No se pudo conectar al servidor. Verifica que el backend esté corriendo.')
+      } else if (status === 401 || status === 403 || status === 500 || status === 404) {
+        // El backend usa 500 para errores de negocio (usuario no existe, contraseña incorrecta)
+        setServerError('Usuario o contraseña incorrectos. Inténtalo de nuevo.')
       } else {
-        setServerError('Error al conectar con el servidor. Intenta de nuevo.')
+        setServerError('Error inesperado. Intenta de nuevo.')
       }
     } finally {
       setLoading(false)
