@@ -33,7 +33,7 @@ public class PreferenceServiceImpl implements IPreferenceService {
 
     @Override
     public PreferencesResponseDTO savePreferences(Long userId, PreferencesRequestDTO dto) {
-        var user = userRepository.findById(userId.intValue())
+        var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         Preference pref = (user.getPreferences() != null)
@@ -67,7 +67,7 @@ public class PreferenceServiceImpl implements IPreferenceService {
 
     @Override
     public PreferencesResponseDTO getPreferences(Long userId) {
-        var user = userRepository.findById(userId.intValue())
+        var user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
         PreferencesResponseDTO response = PreferencesMapper.toDTO(user.getPreferences());
