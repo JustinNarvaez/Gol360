@@ -1,0 +1,608 @@
+/* ── CSS Variables ──────────────────────────────────────────────── */
+:root {
+  --bg-deep: #0f1218;
+  --bg-card: #20232a;
+  --bg-input: #11141a;
+  --text-label: #4f5663;
+  --text-placeholder: #3a3f4b;
+  --text-muted: #6b7280;
+  --text-primary: #e8eaed;
+  --accent: #1ae161;
+  --accent-dim: rgba(26, 225, 97, 0.15);
+  --accent-glow: 0 0 20px rgba(26, 225, 97, 0.35), 0 0 40px rgba(26, 225, 97, 0.15);
+  --accent-glow-text: 0 0 12px rgba(26, 225, 97, 0.7), 0 0 24px rgba(26, 225, 97, 0.3);
+  --card-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.4);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --transition: 0.2s ease;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* ── Reset ──────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: var(--bg-deep);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* ── Stadium Background ─────────────────────────────────────────── */
+.stadium-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    /* Dark overlay */
+    linear-gradient(180deg, rgba(15, 18, 24, 0.75) 0%, rgba(15, 18, 24, 0.92) 100%),
+    /* Stadium pitch glow from the bottom */
+    radial-gradient(ellipse 160% 55% at 50% 105%, rgba(18, 80, 35, 0.7) 0%, rgba(12, 28, 16, 0.5) 35%, transparent 65%),
+    /* Dark deep background */
+    linear-gradient(160deg, #060810 0%, #0a0f0c 40%, #060c09 70%, #050709 100%);
+  /* Simulate blur applied to the background layer */
+  filter: blur(0px);
+}
+
+.stadium-bg::before {
+  content: '';
+  position: absolute;
+  inset: -5%;
+  background:
+    radial-gradient(ellipse 200% 70% at 50% 115%, rgba(26, 225, 97, 0.07) 0%, transparent 55%);
+  filter: blur(30px);
+}
+
+.stadium-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Subtle grid lines evocating a pitch */
+  background-image:
+    linear-gradient(rgba(26, 225, 97, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 225, 97, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* ── Auth Layout ────────────────────────────────────────────────── */
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.auth-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  box-shadow: var(--card-shadow);
+  width: 100%;
+  max-width: 440px;
+  padding: 40px 36px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top accent line on card */
+.auth-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.6;
+}
+
+/* ── Logo ───────────────────────────────────────────────────────── */
+.logo-section {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  font-size: 2.8rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-shadow: var(--accent-glow-text);
+  line-height: 1;
+}
+
+.logo-subtitle {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.35em;
+  color: var(--text-label);
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+/* ── Form Controls ──────────────────────────────────────────────── */
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-label);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.form-input {
+  width: 100%;
+  background: var(--bg-input);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  padding: 12px 14px;
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  font-family: inherit;
+}
+
+.form-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.form-input:focus {
+  border-color: rgba(26, 225, 97, 0.5);
+  box-shadow: 0 0 0 3px rgba(26, 225, 97, 0.08);
+}
+
+.form-input.error {
+  border-color: rgba(239, 68, 68, 0.6);
+}
+
+.field-error {
+  font-size: 0.75rem;
+  color: #f87171;
+  margin-top: 4px;
+}
+
+/* ── Buttons ────────────────────────────────────────────────────── */
+.btn-primary {
+  width: 100%;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #050d08;
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: 0.04em;
+  padding: 13px;
+  cursor: pointer;
+  transition: opacity var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: var(--accent-glow);
+  margin-top: 8px;
+}
+
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.92;
+  box-shadow: 0 0 28px rgba(26, 225, 97, 0.5), 0 0 60px rgba(26, 225, 97, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  width: 100%;
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 500;
+  font-family: inherit;
+  padding: 11px;
+  cursor: pointer;
+  transition: border-color var(--transition), color var(--transition);
+  margin-top: 8px;
+}
+
+.btn-secondary:hover {
+  border-color: rgba(26, 225, 97, 0.3);
+  color: var(--accent);
+}
+
+/* ── Auth Footer ────────────────────────────────────────────────── */
+.auth-footer {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.auth-link {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  text-shadow: 0 0 8px rgba(26, 225, 97, 0.4);
+  transition: text-shadow var(--transition);
+}
+
+.auth-link:hover {
+  text-shadow: 0 0 14px rgba(26, 225, 97, 0.7);
+}
+
+/* ── Error Banner ───────────────────────────────────────────────── */
+.error-banner {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-sm);
+  color: #fca5a5;
+  font-size: 0.85rem;
+  padding: 12px 14px;
+  margin-bottom: 20px;
+  line-height: 1.4;
+}
+
+/* ── Step Indicator ─────────────────────────────────────────────── */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-bottom: 28px;
+}
+
+.step-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 2px solid var(--border-subtle);
+  background: var(--bg-input);
+  color: var(--text-muted);
+  transition: all var(--transition);
+  position: relative;
+  z-index: 1;
+}
+
+.step-dot.active {
+  border-color: var(--accent);
+  background: rgba(26, 225, 97, 0.15);
+  color: var(--accent);
+  box-shadow: 0 0 12px rgba(26, 225, 97, 0.3);
+}
+
+.step-dot.done {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: #050d08;
+}
+
+.step-line {
+  width: 60px;
+  height: 2px;
+  background: var(--border-subtle);
+  position: relative;
+}
+
+.step-line.done {
+  background: var(--accent);
+}
+
+/* ── User Type Selector ─────────────────────────────────────────── */
+.user-type-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.user-type-option {
+  background: var(--bg-input);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.user-type-option:hover {
+  border-color: rgba(26, 225, 97, 0.3);
+}
+
+.user-type-option.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: 0 0 14px rgba(26, 225, 97, 0.15);
+}
+
+.user-type-icon {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.user-type-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.user-type-option.selected .user-type-label {
+  color: var(--accent);
+}
+
+/* ── Preference Grids ───────────────────────────────────────────── */
+.pref-section-title {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-label);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+
+.pref-section-title:first-of-type {
+  margin-top: 0;
+}
+
+.teams-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.team-card {
+  background: var(--bg-input);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 8px 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.team-card:hover {
+  border-color: rgba(26, 225, 97, 0.3);
+}
+
+.team-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.team-flag {
+  width: 28px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 2px;
+  display: block;
+  margin: 0 auto 4px;
+}
+
+.team-name {
+  font-size: 0.6rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+.team-card.selected .team-name {
+  color: var(--accent);
+}
+
+.stadiums-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.stadium-card {
+  background: var(--bg-input);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.stadium-card:hover {
+  border-color: rgba(26, 225, 97, 0.3);
+}
+
+.stadium-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.stadium-card-name {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.stadium-card-city {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.stadium-card.selected .stadium-card-name {
+  color: var(--accent);
+}
+
+.notif-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.notif-pill {
+  background: var(--bg-input);
+  border: 2px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 8px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.notif-pill:hover {
+  border-color: rgba(26, 225, 97, 0.3);
+}
+
+.notif-pill.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.cities-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.city-pill {
+  background: var(--bg-input);
+  border: 2px solid var(--border-subtle);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all var(--transition);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.city-pill:hover {
+  border-color: rgba(26, 225, 97, 0.3);
+}
+
+.city-pill.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+/* ── Nav buttons for steps ──────────────────────────────────────── */
+.step-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.step-nav.single {
+  grid-template-columns: 1fr;
+}
+
+/* ── Register card wider on step 2 ─────────────────────────────── */
+.auth-card.wide {
+  max-width: 560px;
+}
+
+/* ── Divider ────────────────────────────────────────────────────── */
+.form-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 20px 0;
+}
+
+/* ── Selection count badge ──────────────────────────────────────── */
+.selection-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-radius: 10px;
+  padding: 2px 8px;
+  margin-left: 8px;
+}
+
+/* ── Scrollable pref panel ──────────────────────────────────────── */
+.pref-panel {
+  max-height: calc(100vh - 220px);
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.pref-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.pref-panel::-webkit-scrollbar-track {
+  background: var(--bg-input);
+  border-radius: 2px;
+}
+
+.pref-panel::-webkit-scrollbar-thumb {
+  background: rgba(26, 225, 97, 0.3);
+  border-radius: 2px;
+}
+
+/* ── Dashboard placeholder ──────────────────────────────────────── */
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  padding: 24px;
+}
+
+.dashboard-greeting {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.dashboard-greeting span {
+  color: var(--accent);
+  text-shadow: var(--accent-glow-text);
+}
