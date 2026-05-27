@@ -30,6 +30,12 @@ export default function Navbar() {
         >
           Partidos
         </NavLink>
+        <NavLink
+          to="/profile"
+          className={({ isActive }) => `navbar-link${isActive ? ' active' : ''}`}
+        >
+          Perfil
+        </NavLink>
       </div>
 
       <div className="navbar-user">

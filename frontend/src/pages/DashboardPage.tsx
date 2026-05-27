@@ -38,11 +38,11 @@ export default function DashboardPage() {
           <span className="module-title">Partidos</span>
           <span className="module-desc">Calendario y resultados</span>
         </Link>
-        <div className="module-card disabled">
+        <Link to="/profile" className="module-card">
           <span className="module-icon">👤</span>
           <span className="module-title">Perfil</span>
-          <span className="module-desc">Próximamente</span>
-        </div>
+          <span className="module-desc">Datos y preferencias</span>
+        </Link>
         <div className="module-card disabled">
           <span className="module-icon">🏆</span>
           <span className="module-title">Pollas</span>

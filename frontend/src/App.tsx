@@ -6,6 +6,7 @@ import RegisterPage from './pages/RegisterPage'
 import DashboardPage from './pages/DashboardPage'
 import MatchesPage from './pages/MatchesPage'
 import MatchDetailPage from './pages/MatchDetailPage'
+import ProfilePage from './pages/ProfilePage'
 
 function RootRedirect() {
   const { isAuthenticated } = useAuth()
@@ -38,6 +39,7 @@ export default function App() {
             <Route path="/dashboard" element={<DashboardPage />} />
             <Route path="/matches" element={<MatchesPage />} />
             <Route path="/matches/:id" element={<MatchDetailPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

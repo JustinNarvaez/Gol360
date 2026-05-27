@@ -92,6 +92,8 @@ export default function MatchesPage() {
   const [error, setError] = useState<string | null>(null)
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('ALL')
   const [phaseFilter, setPhaseFilter] = useState<TournamentPhase | 'ALL'>('ALL')
+  const [roundFilter, setRoundFilter] = useState<string>('ALL')
+  const [searchQuery, setSearchQuery] = useState('')
 
   const hasLoaded = useRef(false)
 
@@ -134,15 +136,38 @@ export default function MatchesPage() {
     [matches]
   )
 
+  const rounds = useMemo<string[]>(
+    () => Array.from(new Set(matches.map((m) => m.roundName).filter(Boolean))),
+    [matches]
+  )
+
   const filtered = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase()
     return matches.filter((m) => {
       const statusOk = statusFilter === 'ALL' || m.status === statusFilter
       const phaseOk = phaseFilter === 'ALL' || m.phase === phaseFilter
-      return statusOk && phaseOk
+      const roundOk = roundFilter === 'ALL' || m.roundName === roundFilter
+      const searchOk =
+        q === '' ||
+        (m.homeTeam ?? '').toLowerCase().includes(q) ||
+        (m.awayTeam ?? '').toLowerCase().includes(q) ||
+        (m.homeTeamCode ?? '').toLowerCase().includes(q) ||
+        (m.awayTeamCode ?? '').toLowerCase().includes(q)
+      return statusOk && phaseOk && roundOk && searchOk
     })
-  }, [matches, statusFilter, phaseFilter])
+  }, [matches, statusFilter, phaseFilter, roundFilter, searchQuery])
 
   const liveCount = useMemo(() => matches.filter((m) => m.status === 'IN_PROGRESS').length, [matches])
+
+  const hasActiveFilters =
+    statusFilter !== 'ALL' || phaseFilter !== 'ALL' || roundFilter !== 'ALL' || searchQuery !== ''
+
+  function clearFilters() {
+    setStatusFilter('ALL')
+    setPhaseFilter('ALL')
+    setRoundFilter('ALL')
+    setSearchQuery('')
+  }
 
   return (
     <div className="matches-page">
@@ -161,34 +186,63 @@ export default function MatchesPage() {
       </div>
 
       <div className="matches-filters">
-        <div className="status-tabs">
-          {STATUS_FILTERS.map((f) => (
-            <button
-              key={f.value}
-              className={`status-tab${statusFilter === f.value ? ' active' : ''}`}
-              onClick={() => setStatusFilter(f.value)}
-            >
-              {f.value === 'IN_PROGRESS' && <span className="live-dot" />}
-              {f.label}
-            </button>
-          ))}
+        <div className="matches-search-row">
+          <input
+            type="text"
+            className="matches-search"
+            placeholder="Buscar equipo..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="Buscar por equipo"
+          />
         </div>
 
-        {phases.length > 0 && (
-          <select
-            className="phase-select"
-            value={phaseFilter}
-            onChange={(e) => setPhaseFilter(e.target.value as TournamentPhase | 'ALL')}
-            aria-label="Filtrar por fase"
-          >
-            <option value="ALL">Todas las fases</option>
-            {phases.map((p) => (
-              <option key={p} value={p}>
-                {PHASE_LABELS[p]}
-              </option>
+        <div className="matches-filter-row">
+          <div className="status-tabs">
+            {STATUS_FILTERS.map((f) => (
+              <button
+                key={f.value}
+                className={`status-tab${statusFilter === f.value ? ' active' : ''}`}
+                onClick={() => setStatusFilter(f.value)}
+              >
+                {f.value === 'IN_PROGRESS' && <span className="live-dot" />}
+                {f.label}
+              </button>
             ))}
-          </select>
-        )}
+          </div>
+
+          <div className="matches-selects">
+            {phases.length > 0 && (
+              <select
+                className="phase-select"
+                value={phaseFilter}
+                onChange={(e) => setPhaseFilter(e.target.value as TournamentPhase | 'ALL')}
+                aria-label="Filtrar por fase"
+              >
+                <option value="ALL">Todas las fases</option>
+                {phases.map((p) => (
+                  <option key={p} value={p}>
+                    {PHASE_LABELS[p]}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {rounds.length > 0 && (
+              <select
+                className="phase-select"
+                value={roundFilter}
+                onChange={(e) => setRoundFilter(e.target.value)}
+                aria-label="Filtrar por jornada"
+              >
+                <option value="ALL">Todas las jornadas</option>
+                {rounds.map((r) => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            )}
+          </div>
+        </div>
       </div>
 
       {loading && (
@@ -214,13 +268,15 @@ export default function MatchesPage() {
       {!loading && !error && filtered.length === 0 && (
         <div className="matches-state">
           <p>No hay partidos para los filtros seleccionados.</p>
-          <button
-            className="btn-secondary"
-            style={{ width: 'auto', padding: '8px 18px', marginTop: 0 }}
-            onClick={() => { setStatusFilter('ALL'); setPhaseFilter('ALL') }}
-          >
-            Limpiar filtros
-          </button>
+          {hasActiveFilters && (
+            <button
+              className="btn-secondary"
+              style={{ width: 'auto', padding: '8px 18px', marginTop: 0 }}
+              onClick={clearFilters}
+            >
+              Limpiar filtros
+            </button>
+          )}
         </div>
       )}
 
