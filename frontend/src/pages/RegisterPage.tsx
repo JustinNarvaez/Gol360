@@ -179,10 +179,13 @@ export default function RegisterPage() {
       navigate('/dashboard', { replace: true })
     } catch (err: unknown) {
       const axiosErr = err as { response?: { status?: number; data?: { message?: string } } }
-      if (axiosErr.response?.status === 409) {
+      const status = axiosErr.response?.status
+
+      if (!status) {
+        setServerError('No se pudo conectar al servidor. Verifica que el backend esté corriendo.')
+      } else if (status === 409 || status === 500) {
+        // El backend usa 500 para duplicados (email/usuario ya existe)
         setServerError('El email o nombre de usuario ya está registrado.')
-      } else if (axiosErr.response?.data?.message) {
-        setServerError(axiosErr.response.data.message)
       } else {
         setServerError('Error al crear la cuenta. Intenta de nuevo.')
       }
